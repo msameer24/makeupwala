@@ -1,0 +1,63 @@
+** rafce  is the command to make a boiler plate code **
+ 
+
+
+
+
+** Common colors by product **
+
+1. Lipstick
+
+Red
+Pink
+Nude
+Peach
+Coral
+Burgundy
+Wine
+Brown
+Purple
+
+2. Foundation
+
+Ivory
+Beige
+Nude
+Tan
+Brown
+
+3. Eyeliner / Mascara
+
+Black
+Brown
+Blue
+Green
+Purple
+
+
+4. Eyeshadow
+
+Gold
+Silver
+Bronze
+Champagne
+Pink
+Purple
+Brown
+Black
+Green
+Blue
+
+5. Nail Polish
+
+Red
+Pink
+Black
+White
+Nude
+Gold
+Silver
+Purple
+Blue
+Green
+Burgundy
