@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from "react";
-// import Image from "next/image";
+
 import { Image } from "next-sanity/image";
 import Link from "next/link";
 
-// import Autoplay from "embla-carousel-autoplay";
+import Autoplay from "embla-carousel-autoplay";
 import { ArrowRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -72,13 +72,13 @@ interface FeaturedCarouselProps{
             align:"start",
           }}
 
-          // plugins={[
-          //    Autoplay({
-          //   //  delay: 2000,
-          //    stopOnIneraction: false,
-          //    stopOnMouseEnter: false,
-          //       }),
-          //   ]}
+          plugins={[
+             Autoplay({
+             delay: 2000,
+             stopOnInteraction: false,
+             stopOnMouseEnter: true,
+                }),
+            ]}
             className="w-full"
         >
 
@@ -130,10 +130,9 @@ interface FeaturedSlideProps {
 }
 
 function FeaturedSlide({ product }: FeaturedSlideProps) {
-    console.log("PRODUCT FROM SANITY:", product);
 
  const mainImage = product.images?.[0]
-  ? urlFor(product.images[0]).width(1200).url()
+  ? urlFor(product.images[0]).width(800).url()
   : null;
 
   return (

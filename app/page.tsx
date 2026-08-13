@@ -25,15 +25,13 @@ export default async function Home() {
   
   return(
     <div>
-      <h1>Hello welcome </h1>
-
+      
 
        {/* Featured Products Carousel */}
      <Suspense fallback={<FeaturedCarouselSkeleton />}>
         <FeatureCarousel products={featuredProducts} />
       </Suspense>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aliquid quis sunt ducimus, iusto voluptatem suscipit dolor, maiores optio facere perspiciatis esse, rerum officia dolorum. Asperiores excepturi nulla adipisci et suscipit aspernatur similique tenetur esse velit recusandae voluptas voluptatum, officia totam ad culpa magni architecto, nihil eos iure placeat. Labore, tempora.</p>
-      
+     
     </div>
     
   )
