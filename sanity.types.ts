@@ -432,9 +432,9 @@ export type AllSanitySchemaTypes =
   | Geopoint;
 
 // Source: sanity/queries/categories.ts
-// Variable: All_CATEGORIE_QUERY
+// Variable: ALL_CATEGORIES_QUERY
 // Query: *[  _type == 'category'] | order(title asc) {        _id,         title,         "slug":slug.current,        "image" : image{         asset->{            _id,            url         },          hotspot        }    }
-export type AllCATEGORIEQUERYResult = Array<{
+export type ALL_CATEGORIES_QUERY_RESULT = Array<{
   _id: string;
   title: string | null;
   slug: string | null;
@@ -537,8 +537,26 @@ export type ALL_PRODUCTS_QUERY_RESULT = Array<{
 
 // Source: sanity/queries/product.ts
 // Variable: FEATURED_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && featured == true  && stock > 0] | order(name asc) [0...6] {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  stock}
-export type FEATURED_PRODUCTS_QUERY_RESULT = Array<never>;
+// Query: *[  _type == "product"  && feature == true  && inStock > 0] | order(title asc) [0...6] {  _id,  "name": title,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset,    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  "stock": inStock}
+export type FEATURED_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+}>;
 
 // Source: sanity/queries/product.ts
 // Variable: PRODUCTS_BY_CATEGORY_QUERY
@@ -781,7 +799,7 @@ export type AI_SEARCH_PRODUCTS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '*[  _type == \'category\'] | order(title asc) {\n        _id, \n        title, \n        "slug":slug.current,\n        "image" : image{\n         asset->{\n            _id,\n            url\n         }, \n         hotspot\n        }\n    }': AllCATEGORIEQUERYResult;
+    '*[  _type == \'category\'] | order(title asc) {\n        _id, \n        title, \n        "slug":slug.current,\n        "image" : image{\n         asset->{\n            _id,\n            url\n         }, \n         hotspot\n        }\n    }': ALL_CATEGORIES_QUERY_RESULT;
     '* [  _type == "customer" && email == $email ] [0] \n    {\n        _id,\n        name,\n        email,\n\n    }\n': CUSTOMER_BY_EMAIL_QUERY_RESULT;
     '\n  *[_type == "order"] {\n\n    _id,\n    orderNumber,\n    totalCost,\n    email,\n    PhoneNumber,\n  } \n': ALL_ORDERS_QUERY_RESULT;
     '\n  *[ _type == "order" && clerkUserId == $clerkUserId] | order(createdAt desc)\n  {\n    _id,\n    orderNumber,\n    totalCost,\n    createdAt,\n    email,\n    PhoneNumber,\n    clerkUserId,\n    "itemCount": count(item),\n    "itemNames": item[].product->name,\n\n  }': ORDER_BY_USER_QUERY_RESULT;
@@ -789,7 +807,7 @@ declare module "@sanity/client" {
     ' \n   *[ _type == "order"] | order(createdAt desc){\n       _id,\n    orderNumber,  \n    email,\n    totalCost,\n   createdAt,\n  }\n  ': RECENT_ORDERS_QUERY_RESULT;
     '\n  *[ _type == "order" && stripeCustomerId == $stripeCustomerId ] [0]{ _id } ': ORDER_BY_STRIPE_PAYMENT_ID_QUERY_RESULT;
     '*[\n  _type == "product"\n] | order(name asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  "images": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  dimensions,\n  stock,\n  featured,\n  assemblyRequired\n}': ALL_PRODUCTS_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && featured == true\n  && stock > 0\n] | order(name asc) [0...6] {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  "images": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  stock\n}': FEATURED_PRODUCTS_QUERY_RESULT;
+    '*[\n  _type == "product"\n  && feature == true\n  && inStock > 0\n] | order(title asc) [0...6] {\n  _id,\n  "name": title,\n  "slug": slug.current,\n  description,\n  price,\n  "images": images[]{\n    _key,\n    asset,\n    hotspot,\n    crop\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  "stock": inStock\n}': FEATURED_PRODUCTS_QUERY_RESULT;
     '*[\n  _type == "product"\n  && category->slug.current == $categorySlug\n] | order(name asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  price,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': PRODUCTS_BY_CATEGORY_QUERY_RESULT;
     '*[\n  _type == "product"\n  && slug.current == $slug\n][0] {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  "images": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  dimensions,\n  stock,\n  featured,\n  assemblyRequired\n}': PRODUCT_BY_SLUG_QUERY_RESULT;
     '*[\n  _type == "product"\n  && (\n    name match $searchQuery + "*"\n    || description match $searchQuery + "*"\n  )\n] | score(\n  boost(name match $searchQuery + "*", 3),\n  boost(description match $searchQuery + "*", 1)\n) | order(_score desc) {\n  _id,\n  _score,\n  name,\n  "slug": slug.current,\n  price,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': SEARCH_PRODUCTS_QUERY_RESULT;

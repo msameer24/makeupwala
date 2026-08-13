@@ -1,13 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
+import { Image } from "next-sanity/image";
 import Link from "next/link";
 
-import Autoplay from "embla-carousel-autoplay"
-
-
+// import Autoplay from "embla-carousel-autoplay";
 import { ArrowRight } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
 import {
     Carousel,
     CarouselContent,
@@ -17,23 +20,22 @@ import {
     type CarouselApi,
 } from '@/components/ui/carousel';
 
-// import  from '';
-import { Button } from "./ui/button";
-import {Badge}  from '@/components/ui/badge';
+import { urlFor } from "@/sanity/lib/image";
+
 import { cn , formatPrice} from "@/lib/utils";
 
 import type { FEATURED_PRODUCTS_QUERY_RESULT } from "@/sanity.types";
 
 
-type featureProduct = FEATURED_PRODUCTS_QUERY_RESULT[number]
 
-interface featureCarouselProps{
-    products: FEATURED_PRODUCTS_QUERY_RESULT;
- }
+type FeaturedProduct = FEATURED_PRODUCTS_QUERY_RESULT[number];
+
+interface FeaturedCarouselProps{
+  products: FEATURED_PRODUCTS_QUERY_RESULT;
+}
 
 
-
- export function featureCarousel( {products} : featureCarouselProps) {
+ export function FeatureCarousel( {products} : FeaturedCarouselProps) {
      const [api, setApi] = useState<CarouselApi>()
      const [current, setCurrent] = useState(0);
      const [count, setCount] = useState(0);
@@ -62,7 +64,7 @@ interface featureCarouselProps{
     return null;
    }
   return (
-    <div >
+    <div className="relative w-full bg-gradient from-zinc-900 via-zinc-800 to-zinc-900 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
         <Carousel
           setApi={setApi}
           opts={{
@@ -70,13 +72,13 @@ interface featureCarouselProps{
             align:"start",
           }}
 
-          plugins={[
-             Autoplay({
-             delay: 2000,
-             stopOnIneraction: false,
-             stopOnMouseEnter: false,
-                }),
-            ]}
+          // plugins={[
+          //    Autoplay({
+          //   //  delay: 2000,
+          //    stopOnIneraction: false,
+          //    stopOnMouseEnter: false,
+          //       }),
+          //   ]}
             className="w-full"
         >
 
@@ -96,7 +98,110 @@ interface featureCarouselProps{
         <CarouselNext className= "right-4 border-zinc-700 bg-zinc-800/80 text-white hover:bg-zinc-700  hover:text-white sm:right-8"/>
 
         </Carousel>
+
+          { count > 1 && (
+            <div  className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
+              {Array.from( { length: count}).map((_, index) => (
+                <button
+              key={`dot-${index}`}
+              type="button"
+              onClick={() => scrollTo(index)}
+              className={cn(
+                "h-2 w-2 rounded-full transition-all duration-300",
+                current === index
+                  ? "w-6 bg-white"
+                  : "bg-white/40 hover:bg-white/60",
+              )}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+
+              ) )}
+            </div>
+
+          )}
     </div>
-  )
+  );
+}
+
+
+
+interface FeaturedSlideProps {
+  product: FeaturedProduct;
+}
+
+function FeaturedSlide({ product }: FeaturedSlideProps) {
+    console.log("PRODUCT FROM SANITY:", product);
+
+ const mainImage = product.images?.[0]
+  ? urlFor(product.images[0]).width(1200).url()
+  : null;
+
+  return (
+  
+
+    <div className="flex min-h-125 w-full flex-col md:flex-row ">
+      {/* Image Section - Left side (60% on desktop) */}
+      <div className="relative h-64 w-full md:h-auto md:w-3/5">
+        {mainImage ? (
+          <Image
+            src={mainImage}
+            alt={product.name ?? "Featured product"}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 60vw"
+            
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center bg-zinc-800">
+            <span className="text-zinc-500">No image</span>
+          </div>
+        )}
+
+        {/* Gradient overlay for image edge blending */}
+        <div className="absolute inset-0 bg-gradient from-transparent via-transparent to-zinc-900/90 dark:to-zinc-950/90 hidden md:block" />
+        <div className="absolute inset-0 bg-gradient from-zinc-900/90 via-transparent to-transparent md:hidden" />
+      </div>
+
+      {/* Content Section - Right side (40% on desktop) */}
+      <div className="flex w-full flex-col justify-center px-6 py-8 md:w-2/5 md:px-10 lg:px-16">
+        {product.category && (
+          <Badge
+            variant="secondary"
+            className="mb-4 w-fit bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+          >
+            {product.category.title}
+          </Badge>
+        )}
+
+        <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+          {product.name}
+        </h2>
+
+        {product.name}
+
+        {product.description && (
+          <p className="mt-4 line-clamp-3 text-sm text-zinc-300 sm:text-base lg:text-lg">
+            {product.description}
+          </p>
+        )}
+
+        <p className="mt-6 text-3xl font-bold text-white lg:text-4xl">
+          {formatPrice(product.price)}
+        </p>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link href={`/products/${product.slug}`}>
+            <Button
+              size="lg"
+              className="bg-white text-zinc-900 hover:bg-zinc-100"
+            >
+              Shop Now
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
 

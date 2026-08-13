@@ -6,7 +6,7 @@ import { defineQuery } from "next-sanity";
  * 
  */
 
-export const All_CATEGORIE_QUERY = defineQuery(
+export const ALL_CATEGORIES_QUERY = defineQuery(
     `*[  _type == 'category'] | order(title asc) {
         _id, 
         title, 

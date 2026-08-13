@@ -86,31 +86,71 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
 /**
  * Get featured products for homepage carousel
  */
+
+
+// export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
+//   _type == "product"
+  
+// ] | order(name asc) [0...6] {
+//   _id,
+//   name,
+//   "slug": slug.current,
+//   description,
+//   price,
+//   "images": images[]{
+//     _key,
+//     asset->{
+//       _id,
+//       url
+//     },
+//     hotspot
+//   },
+//   category->{
+//     _id,
+//     title,
+//     "slug": slug.current
+//   },
+//   stock
+// }`);
+
+
+
+
+// **********************************************
+
 export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
   _type == "product"
-  && featured == true
-  && stock > 0
-] | order(name asc) [0...6] {
+  && feature == true
+  && inStock > 0
+] | order(title asc) [0...6] {
   _id,
-  name,
+  "name": title,
   "slug": slug.current,
   description,
   price,
   "images": images[]{
     _key,
-    asset->{
-      _id,
-      url
-    },
-    hotspot
+    asset,
+    hotspot,
+    crop
   },
   category->{
     _id,
     title,
     "slug": slug.current
   },
-  stock
+  "stock": inStock
 }`);
+
+
+
+
+
+
+
+
+
+// **********************************************
 
 /**
  * Get products by category slug
