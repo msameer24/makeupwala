@@ -128,6 +128,7 @@ export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
   "slug": slug.current,
   description,
   price,
+discount,
   "images": images[]{
     _key,
     asset,
