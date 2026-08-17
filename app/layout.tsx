@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/app/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SanityLive } from "@/sanity/lib/live";
-
+import { Navbar } from "@/components/app/Header";
+import { Footer } from "@/components/app/Footer";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -41,6 +41,7 @@ export default function RootLayout({
           {children}
           <SanityLive />
 
+        <Footer />
       </body>
     </html>
 

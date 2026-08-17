@@ -1,11 +1,8 @@
-
 'use client';
 
 import { useCallback, useEffect, useState } from "react";
-
 import Autoplay from "embla-carousel-autoplay";
 import { ProductCard } from "./ProductCard";
-
 import {
     Carousel,
     CarouselContent,
@@ -14,13 +11,9 @@ import {
     CarouselPrevious,
     type CarouselApi,
 } from '@/components/ui/carousel';
-
 import { urlFor } from "@/sanity/lib/image";
-
 import { cn , formatPrice} from "@/lib/utils";
-
 import type { FEATURED_PRODUCTS_QUERY_RESULT } from "@/sanity.types";
-
 
 
 type FeaturedProduct = FEATURED_PRODUCTS_QUERY_RESULT[number];
@@ -28,6 +21,7 @@ type FeaturedProduct = FEATURED_PRODUCTS_QUERY_RESULT[number];
 interface FeaturedCarouselProps{
   products: FEATURED_PRODUCTS_QUERY_RESULT;
 }
+
 
 export function FeatureCarousel({ products }: FeaturedCarouselProps) {
   const [api, setApi] = useState<CarouselApi>();
@@ -57,10 +51,10 @@ export function FeatureCarousel({ products }: FeaturedCarouselProps) {
   }
 
   return (
-    <section className="bg-[#fff7f5] px-6 py-16">
-      <div className="mx-auto max-w-350">
+    <section className="bg-[#fff7f5] px-6 py-16 h-200">
+      <div className="mx-auto max-w-350 ">
 
-        {/* Heading 
+       
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#ce5960]">
             Best Sellers
@@ -75,7 +69,7 @@ export function FeatureCarousel({ products }: FeaturedCarouselProps) {
           </p>
         </div>
         
-*/}
+
         {/* Carousel */}
         <div className="relative">
 

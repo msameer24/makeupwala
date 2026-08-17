@@ -79,10 +79,11 @@ export type Product = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  name?: string;
   slug?: Slug;
   description?: string;
   price?: number;
+  discount?: number;
   category?: CategoryReference;
   images?: Array<{
     asset?: SanityImageAssetReference;
@@ -92,10 +93,8 @@ export type Product = {
     _type: "image";
     _key: string;
   }>;
-  inStock?: number;
-  discount?: string;
-  Dimension?: string;
-  colors?:
+  stock?: number;
+  color?:
     | "multicolor"
     | "black"
     | "white"
@@ -155,7 +154,8 @@ export type Product = {
     | "roll-on"
     | "pressed-powder"
     | "loose-powder";
-  feature?: boolean;
+  dimension?: string;
+  featured?: boolean;
 };
 
 export type SanityImageCrop = {
@@ -479,7 +479,7 @@ export type ORDER_BY_USER_QUERY_RESULT = Array<{
   PhoneNumber: number | null;
   clerkUserId: string | null;
   itemCount: number | null;
-  itemNames: Array<null> | null;
+  itemNames: Array<string | null> | null;
 }>;
 
 // Source: sanity/queries/orders.ts
@@ -507,47 +507,20 @@ export type ORDER_BY_STRIPE_PAYMENT_ID_QUERY_RESULT = {
 
 // Source: sanity/queries/product.ts
 // Variable: ALL_PRODUCTS_QUERY
-// Query: *[  _type == "product"] | order(name asc) {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  dimensions,  stock,  featured,  assemblyRequired}
+// Query: *[    _type == "product"  ]  | order(name asc)  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
 export type ALL_PRODUCTS_QUERY_RESULT = Array<{
   _id: string;
-  name: null;
+  name: string | null;
   slug: string | null;
   description: string | null;
   price: number | null;
+  discount: number | null;
   images: Array<{
     _key: string;
     asset: {
       _id: string;
       url: string | null;
     } | null;
-    hotspot: SanityImageHotspot | null;
-  }> | null;
-  category: {
-    _id: string;
-    title: string | null;
-    slug: string | null;
-  } | null;
-  material: null;
-  color: null;
-  dimensions: null;
-  stock: null;
-  featured: null;
-  assemblyRequired: null;
-}>;
-
-// Source: sanity/queries/product.ts
-// Variable: FEATURED_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && feature == true  && inStock > 0] | order(title asc) [0...6] {  _id,  "name": title,  "slug": slug.current,  description,  price,discount,  "images": images[]{    _key,    asset,    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  "stock": inStock}
-export type FEATURED_PRODUCTS_QUERY_RESULT = Array<{
-  _id: string;
-  name: string | null;
-  slug: string | null;
-  description: string | null;
-  price: number | null;
-  discount: string | null;
-  images: Array<{
-    _key: string;
-    asset: SanityImageAssetReference | null;
     hotspot: SanityImageHotspot | null;
     crop: SanityImageCrop | null;
   }> | null;
@@ -557,42 +530,264 @@ export type FEATURED_PRODUCTS_QUERY_RESULT = Array<{
     slug: string | null;
   } | null;
   stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: FEATURED_PRODUCTS_QUERY
+// Query: *[    _type == "product"    && featured == true    && stock > 0  ]  | order(name asc)[0...6]  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
+export type FEATURED_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
 }>;
 
 // Source: sanity/queries/product.ts
 // Variable: PRODUCTS_BY_CATEGORY_QUERY
-// Query: *[  _type == "product"  && category->slug.current == $categorySlug] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  stock}
+// Query: *[    _type == "product"    && category->slug.current == $categorySlug  ]  | order(name asc)  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
 export type PRODUCTS_BY_CATEGORY_QUERY_RESULT = Array<{
   _id: string;
-  name: null;
+  name: string | null;
   slug: string | null;
+  description: string | null;
   price: number | null;
-  image: {
+  discount: number | null;
+  images: Array<{
+    _key: string;
     asset: {
       _id: string;
       url: string | null;
     } | null;
     hotspot: SanityImageHotspot | null;
-  } | null;
+    crop: SanityImageCrop | null;
+  }> | null;
   category: {
     _id: string;
     title: string | null;
     slug: string | null;
   } | null;
-  material: null;
-  color: null;
-  stock: null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
 }>;
 
 // Source: sanity/queries/product.ts
 // Variable: PRODUCT_BY_SLUG_QUERY
-// Query: *[  _type == "product"  && slug.current == $slug][0] {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  dimensions,  stock,  featured,  assemblyRequired}
+// Query: *[    _type == "product"    && slug.current == $slug  ][0]  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
 export type PRODUCT_BY_SLUG_QUERY_RESULT = {
   _id: string;
-  name: null;
+  name: string | null;
   slug: string | null;
   description: string | null;
   price: number | null;
+  discount: number | null;
   images: Array<{
     _key: string;
     asset: {
@@ -600,200 +795,774 @@ export type PRODUCT_BY_SLUG_QUERY_RESULT = {
       url: string | null;
     } | null;
     hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   category: {
     _id: string;
     title: string | null;
     slug: string | null;
   } | null;
-  material: null;
-  color: null;
-  dimensions: null;
-  stock: null;
-  featured: null;
-  assemblyRequired: null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
 } | null;
 
 // Source: sanity/queries/product.ts
-// Variable: SEARCH_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && (    name match $searchQuery + "*"    || description match $searchQuery + "*"  )] | score(  boost(name match $searchQuery + "*", 3),  boost(description match $searchQuery + "*", 1)) | order(_score desc) {  _id,  _score,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  stock}
-export type SEARCH_PRODUCTS_QUERY_RESULT = Array<{
+// Variable: PRODUCT_BY_ID_QUERY
+// Query: *[    _type == "product"    && _id == $productId  ][0]  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
+export type PRODUCT_BY_ID_QUERY_RESULT = {
   _id: string;
-  _score: null;
-  name: null;
+  name: string | null;
   slug: string | null;
+  description: string | null;
   price: number | null;
-  image: {
-    asset: {
-      _id: string;
-      url: string | null;
-    } | null;
-    hotspot: SanityImageHotspot | null;
-  } | null;
-  category: {
-    _id: string;
-    title: string | null;
-    slug: string | null;
-  } | null;
-  material: null;
-  color: null;
-  stock: null;
-}>;
-
-// Source: sanity/queries/product.ts
-// Variable: FILTER_PRODUCTS_BY_NAME_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($color == "" || color == $color)  && ($material == "" || material == $material)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  stock}
-export type FILTER_PRODUCTS_BY_NAME_QUERY_RESULT = Array<{
-  _id: string;
-  name: null;
-  slug: string | null;
-  price: number | null;
+  discount: number | null;
   images: Array<{
     _key: string;
     asset: {
       _id: string;
       url: string | null;
     } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   category: {
     _id: string;
     title: string | null;
     slug: string | null;
   } | null;
-  material: null;
-  color: null;
-  stock: null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
+} | null;
+
+// Source: sanity/queries/product.ts
+// Variable: FILTER_PRODUCTS_BY_NAME_QUERY
+// Query: *[      _type == "product"  && (    $categorySlug == ""    || category->slug.current == $categorySlug  )  && (    $color == ""    || color == $color  )  && (    $productForm == ""    || productForm == $productForm  )  && (    $minPrice == 0    || price >= $minPrice  )  && (    $maxPrice == 0    || price <= $maxPrice  )  && (    $searchQuery == ""    || name match $searchQuery + "*"    || description match $searchQuery + "*"  )  && (    $inStock == false    || stock > 0  )  ]  | order(name asc)  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
+export type FILTER_PRODUCTS_BY_NAME_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
 }>;
 
 // Source: sanity/queries/product.ts
 // Variable: FILTER_PRODUCTS_BY_PRICE_ASC_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($color == "" || color == $color)  && ($material == "" || material == $material)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | order(price asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  stock}
+// Query: *[      _type == "product"  && (    $categorySlug == ""    || category->slug.current == $categorySlug  )  && (    $color == ""    || color == $color  )  && (    $productForm == ""    || productForm == $productForm  )  && (    $minPrice == 0    || price >= $minPrice  )  && (    $maxPrice == 0    || price <= $maxPrice  )  && (    $searchQuery == ""    || name match $searchQuery + "*"    || description match $searchQuery + "*"  )  && (    $inStock == false    || stock > 0  )  ]  | order(price asc)  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
 export type FILTER_PRODUCTS_BY_PRICE_ASC_QUERY_RESULT = Array<{
   _id: string;
-  name: null;
+  name: string | null;
   slug: string | null;
+  description: string | null;
   price: number | null;
+  discount: number | null;
   images: Array<{
     _key: string;
-    asset: {
-      _id: string;
-      url: string | null;
-    } | null;
-  }> | null;
-  category: {
-    _id: string;
-    title: string | null;
-    slug: string | null;
-  } | null;
-  material: null;
-  color: null;
-  stock: null;
-}>;
-
-// Source: sanity/queries/product.ts
-// Variable: FILTER_PRODUCTS_BY_PRICE_DESC_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($color == "" || color == $color)  && ($material == "" || material == $material)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | order(price desc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  stock}
-export type FILTER_PRODUCTS_BY_PRICE_DESC_QUERY_RESULT = Array<{
-  _id: string;
-  name: null;
-  slug: string | null;
-  price: number | null;
-  images: Array<{
-    _key: string;
-    asset: {
-      _id: string;
-      url: string | null;
-    } | null;
-  }> | null;
-  category: {
-    _id: string;
-    title: string | null;
-    slug: string | null;
-  } | null;
-  material: null;
-  color: null;
-  stock: null;
-}>;
-
-// Source: sanity/queries/product.ts
-// Variable: FILTER_PRODUCTS_BY_RELEVANCE_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($color == "" || color == $color)  && ($material == "" || material == $material)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | score(  boost(name match $searchQuery + "*", 3),  boost(description match $searchQuery + "*", 1)) | order(_score desc, name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  stock}
-export type FILTER_PRODUCTS_BY_RELEVANCE_QUERY_RESULT = Array<{
-  _id: string;
-  name: null;
-  slug: string | null;
-  price: number | null;
-  images: Array<{
-    _key: string;
-    asset: {
-      _id: string;
-      url: string | null;
-    } | null;
-  }> | null;
-  category: {
-    _id: string;
-    title: string | null;
-    slug: string | null;
-  } | null;
-  material: null;
-  color: null;
-  stock: null;
-}>;
-
-// Source: sanity/queries/product.ts
-// Variable: PRODUCTS_BY_IDS_QUERY
-// Query: *[  _type == "product"  && _id in $ids] {  _id,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  stock}
-export type PRODUCTS_BY_IDS_QUERY_RESULT = Array<{
-  _id: string;
-  name: null;
-  slug: string | null;
-  price: number | null;
-  image: {
     asset: {
       _id: string;
       url: string | null;
     } | null;
     hotspot: SanityImageHotspot | null;
-  } | null;
-  stock: null;
-}>;
-
-// Source: sanity/queries/product.ts
-// Variable: LOW_STOCK_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && stock > 0  && stock <= 5] | order(stock asc) {  _id,  name,  "slug": slug.current,  stock,  "image": images[0]{    asset->{      _id,      url    }  }}
-export type LOW_STOCK_PRODUCTS_QUERY_RESULT = Array<never>;
-
-// Source: sanity/queries/product.ts
-// Variable: OUT_OF_STOCK_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && stock == 0] | order(name asc) {  _id,  name,  "slug": slug.current,  "image": images[0]{    asset->{      _id,      url    }  }}
-export type OUT_OF_STOCK_PRODUCTS_QUERY_RESULT = Array<never>;
-
-// Source: sanity/queries/product.ts
-// Variable: AI_SEARCH_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && (    $searchQuery == ""    || name match $searchQuery + "*"    || description match $searchQuery + "*"    || category->title match $searchQuery + "*"  )  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($material == "" || material == $material)  && ($color == "" || color == $color)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)] | order(name asc) [0...20] {  _id,  name,  "slug": slug.current,  description,  price,  "image": images[0]{    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  material,  color,  dimensions,  stock,  featured,  assemblyRequired}
-export type AI_SEARCH_PRODUCTS_QUERY_RESULT = Array<{
-  _id: string;
-  name: null;
-  slug: string | null;
-  description: string | null;
-  price: number | null;
-  image: {
-    asset: {
-      _id: string;
-      url: string | null;
-    } | null;
-  } | null;
+    crop: SanityImageCrop | null;
+  }> | null;
   category: {
     _id: string;
     title: string | null;
     slug: string | null;
   } | null;
-  material: null;
-  color: null;
-  dimensions: null;
-  stock: null;
-  featured: null;
-  assemblyRequired: null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: FILTER_PRODUCTS_BY_PRICE_DESC_QUERY
+// Query: *[      _type == "product"  && (    $categorySlug == ""    || category->slug.current == $categorySlug  )  && (    $color == ""    || color == $color  )  && (    $productForm == ""    || productForm == $productForm  )  && (    $minPrice == 0    || price >= $minPrice  )  && (    $maxPrice == 0    || price <= $maxPrice  )  && (    $searchQuery == ""    || name match $searchQuery + "*"    || description match $searchQuery + "*"  )  && (    $inStock == false    || stock > 0  )  ]  | order(price desc)  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
+export type FILTER_PRODUCTS_BY_PRICE_DESC_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: FILTER_PRODUCTS_BY_RELEVANCE_QUERY
+// Query: *[      _type == "product"  && (    $categorySlug == ""    || category->slug.current == $categorySlug  )  && (    $color == ""    || color == $color  )  && (    $productForm == ""    || productForm == $productForm  )  && (    $minPrice == 0    || price >= $minPrice  )  && (    $maxPrice == 0    || price <= $maxPrice  )  && (    $searchQuery == ""    || name match $searchQuery + "*"    || description match $searchQuery + "*"  )  && (    $inStock == false    || stock > 0  )  ]  | score(      boost(name match $searchQuery + "*", 3),      boost(description match $searchQuery + "*", 1)    )  | order(_score desc, name asc)  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
+export type FILTER_PRODUCTS_BY_RELEVANCE_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: SEARCH_PRODUCTS_QUERY
+// Query: *[    _type == "product"    && (      name match $searchQuery + "*"      || description match $searchQuery + "*"    )  ]  | score(      boost(name match $searchQuery + "*", 3),      boost(description match $searchQuery + "*", 1)    )  | order(_score desc, name asc)  {    _id,    _score,    name,    "slug": slug.current,    description,    price,    discount,    "images": images[0...8]{      _key,      asset->{        _id,        url      },      hotspot,      crop    },    category->{      _id,      title,      "slug": slug.current    },    stock,    color,    productForm,    dimension,    featured  }
+export type SEARCH_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  _score: null;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: PRODUCTS_BY_IDS_QUERY
+// Query: *[    _type == "product"    && _id in $ids  ]{    _id,    name,    "slug": slug.current,    price,    discount,    "images": images[0...4]{      _key,      asset->{        _id,        url      },      hotspot,      crop    },    stock  }
+export type PRODUCTS_BY_IDS_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  stock: number | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: LOW_STOCK_PRODUCTS_QUERY
+// Query: *[    _type == "product"    && stock > 0    && stock <= 5  ]  | order(stock asc)  {    _id,    name,    "slug": slug.current,    stock,    "image": images[0]{      _key,      asset->{        _id,        url      },      hotspot,      crop    }  }
+export type LOW_STOCK_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  stock: number | null;
+  image: {
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  } | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: OUT_OF_STOCK_PRODUCTS_QUERY
+// Query: *[    _type == "product"    && stock == 0  ]  | order(name asc)  {    _id,    name,    "slug": slug.current,    "image": images[0]{      _key,      asset->{        _id,        url      },      hotspot,      crop    }  }
+export type OUT_OF_STOCK_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  image: {
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  } | null;
+}>;
+
+// Source: sanity/queries/product.ts
+// Variable: AI_SEARCH_PRODUCTS_QUERY
+// Query: *[    _type == "product"    && (      $searchQuery == ""      || name match $searchQuery + "*"      || description match $searchQuery + "*"      || category->title match $searchQuery + "*"    )    && (      $categorySlug == ""      || category->slug.current == $categorySlug    )    && (      $color == ""      || color == $color    )    && (      $productForm == ""      || productForm == $productForm    )    && (      $minPrice == 0      || price >= $minPrice    )    && (      $maxPrice == 0      || price <= $maxPrice    )  ]  | order(name asc)[0...20]  {    _id,    name,    "slug": slug.current,    description,    price,    discount,    "images": images[0...4]{      _key,      asset->{        _id,        url      },      hotspot,      crop    },    category->{      _id,      title,      "slug": slug.current    },    stock,    color,    productForm,    dimension,    featured  }
+export type AI_SEARCH_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
 }>;
 
 // Query TypeMap
@@ -807,18 +1576,19 @@ declare module "@sanity/client" {
     ' \n  *[ _type == " order" && _id == $_id] [0] \n  {\n     _id,\n    orderNumber,\n    clerkUserId,\n    email,\n    item[]\n    {\n        _key,\n        quantity,\n        priceAtPurchase,\n        product->\n        {\n              _id,\n              name,\n              "slug": slug.current,\n              "image": images[0]\n              {\n                      asset->\n                      {\n                        _id,\n                        url\n                      }\n              }\n        }\n    },\n    totalCost,\n    address\n    {\n        name,\n        line1,\n        line2,\n        city,\n        postcode,\n        country,\n    },\n    stripeCustomerId,\n     createdAt,\n  } ': ORDER_BY_ID_QUERY_RESULT;
     ' \n   *[ _type == "order"] | order(createdAt desc){\n       _id,\n    orderNumber,  \n    email,\n    totalCost,\n   createdAt,\n  }\n  ': RECENT_ORDERS_QUERY_RESULT;
     '\n  *[ _type == "order" && stripeCustomerId == $stripeCustomerId ] [0]{ _id } ': ORDER_BY_STRIPE_PAYMENT_ID_QUERY_RESULT;
-    '*[\n  _type == "product"\n] | order(name asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  "images": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  dimensions,\n  stock,\n  featured,\n  assemblyRequired\n}': ALL_PRODUCTS_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && feature == true\n  && inStock > 0\n] | order(title asc) [0...6] {\n  _id,\n  "name": title,\n  "slug": slug.current,\n  description,\n  price,\ndiscount,\n  "images": images[]{\n    _key,\n    asset,\n    hotspot,\n    crop\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  "stock": inStock\n}': FEATURED_PRODUCTS_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && category->slug.current == $categorySlug\n] | order(name asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  price,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': PRODUCTS_BY_CATEGORY_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && slug.current == $slug\n][0] {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  "images": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  dimensions,\n  stock,\n  featured,\n  assemblyRequired\n}': PRODUCT_BY_SLUG_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && (\n    name match $searchQuery + "*"\n    || description match $searchQuery + "*"\n  )\n] | score(\n  boost(name match $searchQuery + "*", 3),\n  boost(description match $searchQuery + "*", 1)\n) | order(_score desc) {\n  _id,\n  _score,\n  name,\n  "slug": slug.current,\n  price,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': SEARCH_PRODUCTS_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && ($categorySlug == "" || category->slug.current == $categorySlug)\n  && ($color == "" || color == $color)\n  && ($material == "" || material == $material)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")\n  && ($inStock == false || stock > 0)\n] | order(name asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  price,\n  "images": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': FILTER_PRODUCTS_BY_NAME_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && ($categorySlug == "" || category->slug.current == $categorySlug)\n  && ($color == "" || color == $color)\n  && ($material == "" || material == $material)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")\n  && ($inStock == false || stock > 0)\n] | order(price asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  price,\n  "images": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': FILTER_PRODUCTS_BY_PRICE_ASC_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && ($categorySlug == "" || category->slug.current == $categorySlug)\n  && ($color == "" || color == $color)\n  && ($material == "" || material == $material)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")\n  && ($inStock == false || stock > 0)\n] | order(price desc) {\n  _id,\n  name,\n  "slug": slug.current,\n  price,\n  "images": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': FILTER_PRODUCTS_BY_PRICE_DESC_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && ($categorySlug == "" || category->slug.current == $categorySlug)\n  && ($color == "" || color == $color)\n  && ($material == "" || material == $material)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")\n  && ($inStock == false || stock > 0)\n] | score(\n  boost(name match $searchQuery + "*", 3),\n  boost(description match $searchQuery + "*", 1)\n) | order(_score desc, name asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  price,\n  "images": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  stock\n}': FILTER_PRODUCTS_BY_RELEVANCE_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && _id in $ids\n] {\n  _id,\n  name,\n  "slug": slug.current,\n  price,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  stock\n}': PRODUCTS_BY_IDS_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && stock > 0\n  && stock <= 5\n] | order(stock asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  stock,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    }\n  }\n}': LOW_STOCK_PRODUCTS_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && stock == 0\n] | order(name asc) {\n  _id,\n  name,\n  "slug": slug.current,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    }\n  }\n}': OUT_OF_STOCK_PRODUCTS_QUERY_RESULT;
-    '*[\n  _type == "product"\n  && (\n    $searchQuery == ""\n    || name match $searchQuery + "*"\n    || description match $searchQuery + "*"\n    || category->title match $searchQuery + "*"\n  )\n  && ($categorySlug == "" || category->slug.current == $categorySlug)\n  && ($material == "" || material == $material)\n  && ($color == "" || color == $color)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n] | order(name asc) [0...20] {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  "image": images[0]{\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  material,\n  color,\n  dimensions,\n  stock,\n  featured,\n  assemblyRequired\n}': AI_SEARCH_PRODUCTS_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n  ]\n  | order(name asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': ALL_PRODUCTS_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && featured == true\n    && stock > 0\n  ]\n  | order(name asc)[0...6]\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': FEATURED_PRODUCTS_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && category->slug.current == $categorySlug\n  ]\n  | order(name asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': PRODUCTS_BY_CATEGORY_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && slug.current == $slug\n  ][0]\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': PRODUCT_BY_SLUG_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && _id == $productId\n  ][0]\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': PRODUCT_BY_ID_QUERY_RESULT;
+    '\n  *[\n    \n  _type == "product"\n\n  && (\n    $categorySlug == ""\n    || category->slug.current == $categorySlug\n  )\n\n  && (\n    $color == ""\n    || color == $color\n  )\n\n  && (\n    $productForm == ""\n    || productForm == $productForm\n  )\n\n  && (\n    $minPrice == 0\n    || price >= $minPrice\n  )\n\n  && (\n    $maxPrice == 0\n    || price <= $maxPrice\n  )\n\n  && (\n    $searchQuery == ""\n    || name match $searchQuery + "*"\n    || description match $searchQuery + "*"\n  )\n\n  && (\n    $inStock == false\n    || stock > 0\n  )\n\n  ]\n  | order(name asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': FILTER_PRODUCTS_BY_NAME_QUERY_RESULT;
+    '\n  *[\n    \n  _type == "product"\n\n  && (\n    $categorySlug == ""\n    || category->slug.current == $categorySlug\n  )\n\n  && (\n    $color == ""\n    || color == $color\n  )\n\n  && (\n    $productForm == ""\n    || productForm == $productForm\n  )\n\n  && (\n    $minPrice == 0\n    || price >= $minPrice\n  )\n\n  && (\n    $maxPrice == 0\n    || price <= $maxPrice\n  )\n\n  && (\n    $searchQuery == ""\n    || name match $searchQuery + "*"\n    || description match $searchQuery + "*"\n  )\n\n  && (\n    $inStock == false\n    || stock > 0\n  )\n\n  ]\n  | order(price asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': FILTER_PRODUCTS_BY_PRICE_ASC_QUERY_RESULT;
+    '\n  *[\n    \n  _type == "product"\n\n  && (\n    $categorySlug == ""\n    || category->slug.current == $categorySlug\n  )\n\n  && (\n    $color == ""\n    || color == $color\n  )\n\n  && (\n    $productForm == ""\n    || productForm == $productForm\n  )\n\n  && (\n    $minPrice == 0\n    || price >= $minPrice\n  )\n\n  && (\n    $maxPrice == 0\n    || price <= $maxPrice\n  )\n\n  && (\n    $searchQuery == ""\n    || name match $searchQuery + "*"\n    || description match $searchQuery + "*"\n  )\n\n  && (\n    $inStock == false\n    || stock > 0\n  )\n\n  ]\n  | order(price desc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': FILTER_PRODUCTS_BY_PRICE_DESC_QUERY_RESULT;
+    '\n  *[\n    \n  _type == "product"\n\n  && (\n    $categorySlug == ""\n    || category->slug.current == $categorySlug\n  )\n\n  && (\n    $color == ""\n    || color == $color\n  )\n\n  && (\n    $productForm == ""\n    || productForm == $productForm\n  )\n\n  && (\n    $minPrice == 0\n    || price >= $minPrice\n  )\n\n  && (\n    $maxPrice == 0\n    || price <= $maxPrice\n  )\n\n  && (\n    $searchQuery == ""\n    || name match $searchQuery + "*"\n    || description match $searchQuery + "*"\n  )\n\n  && (\n    $inStock == false\n    || stock > 0\n  )\n\n  ]\n  | score(\n      boost(name match $searchQuery + "*", 3),\n      boost(description match $searchQuery + "*", 1)\n    )\n  | order(_score desc, name asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': FILTER_PRODUCTS_BY_RELEVANCE_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && (\n      name match $searchQuery + "*"\n      || description match $searchQuery + "*"\n    )\n  ]\n  | score(\n      boost(name match $searchQuery + "*", 3),\n      boost(description match $searchQuery + "*", 1)\n    )\n  | order(_score desc, name asc)\n  {\n    _id,\n    _score,\n    name,\n    "slug": slug.current,\n    description,\n    price,\n    discount,\n\n    "images": images[0...8]{\n      _key,\n      asset->{\n        _id,\n        url\n      },\n      hotspot,\n      crop\n    },\n\n    category->{\n      _id,\n      title,\n      "slug": slug.current\n    },\n\n    stock,\n    color,\n    productForm,\n    dimension,\n    featured\n  }\n': SEARCH_PRODUCTS_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && _id in $ids\n  ]{\n    _id,\n    name,\n    "slug": slug.current,\n    price,\n    discount,\n\n    "images": images[0...4]{\n      _key,\n      asset->{\n        _id,\n        url\n      },\n      hotspot,\n      crop\n    },\n\n    stock\n  }\n': PRODUCTS_BY_IDS_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && stock > 0\n    && stock <= 5\n  ]\n  | order(stock asc)\n  {\n    _id,\n    name,\n    "slug": slug.current,\n    stock,\n\n    "image": images[0]{\n      _key,\n      asset->{\n        _id,\n        url\n      },\n      hotspot,\n      crop\n    }\n  }\n': LOW_STOCK_PRODUCTS_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && stock == 0\n  ]\n  | order(name asc)\n  {\n    _id,\n    name,\n    "slug": slug.current,\n\n    "image": images[0]{\n      _key,\n      asset->{\n        _id,\n        url\n      },\n      hotspot,\n      crop\n    }\n  }\n': OUT_OF_STOCK_PRODUCTS_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n\n    && (\n      $searchQuery == ""\n      || name match $searchQuery + "*"\n      || description match $searchQuery + "*"\n      || category->title match $searchQuery + "*"\n    )\n\n    && (\n      $categorySlug == ""\n      || category->slug.current == $categorySlug\n    )\n\n    && (\n      $color == ""\n      || color == $color\n    )\n\n    && (\n      $productForm == ""\n      || productForm == $productForm\n    )\n\n    && (\n      $minPrice == 0\n      || price >= $minPrice\n    )\n\n    && (\n      $maxPrice == 0\n      || price <= $maxPrice\n    )\n  ]\n  | order(name asc)[0...20]\n  {\n    _id,\n    name,\n    "slug": slug.current,\n    description,\n    price,\n    discount,\n\n    "images": images[0...4]{\n      _key,\n      asset->{\n        _id,\n        url\n      },\n      hotspot,\n      crop\n    },\n\n    category->{\n      _id,\n      title,\n      "slug": slug.current\n    },\n\n    stock,\n    color,\n    productForm,\n    dimension,\n    featured\n  }\n': AI_SEARCH_PRODUCTS_QUERY_RESULT;
   }
 }

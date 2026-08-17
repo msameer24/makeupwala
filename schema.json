@@ -344,7 +344,7 @@
           "type": "string"
         }
       },
-      "title": {
+      "name": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -367,6 +367,13 @@
         "optional": true
       },
       "price": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "discount": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
@@ -442,28 +449,14 @@
         },
         "optional": true
       },
-      "inStock": {
+      "stock": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
         },
         "optional": true
       },
-      "discount": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "Dimension": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "colors": {
+      "color": {
         "type": "objectAttribute",
         "value": {
           "type": "union",
@@ -713,7 +706,14 @@
         },
         "optional": true
       },
-      "feature": {
+      "dimension": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "featured": {
         "type": "objectAttribute",
         "value": {
           "type": "boolean"

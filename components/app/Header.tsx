@@ -23,7 +23,8 @@ const {isSignedIn } = useAuth();
   return (
    
     
-      <header className="border-b border-[#eee2df] bg-white sticky top-0 ">
+      
+        <header className="sticky top-0 z-50 border-b border-[#eee2df] bg-white">
 
         <div className="mx-auto flex h-24 max-w-362.5 items-center justify-between px-6">
 
