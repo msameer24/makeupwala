@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Autoplay from "embla-carousel-autoplay";
-import { ProductCard } from "./ProductCard";
 import {
     Carousel,
     CarouselContent,
@@ -14,6 +13,8 @@ import {
 import { urlFor } from "@/sanity/lib/image";
 import { cn , formatPrice} from "@/lib/utils";
 import type { FEATURED_PRODUCTS_QUERY_RESULT } from "@/sanity.types";
+
+import { FeatureProductCard } from "./FeatureCarouselCard";
 
 
 type FeaturedProduct = FEATURED_PRODUCTS_QUERY_RESULT[number];
@@ -51,10 +52,8 @@ export function FeatureCarousel({ products }: FeaturedCarouselProps) {
   }
 
   return (
-    <section className="bg-[#fff7f5] px-6 py-16 h-200">
-      <div className="mx-auto max-w-350 ">
-
-       
+    <section className="bg-[#fff7f5] px-6 py-16">
+      <div className="mx-auto max-w-350  ">
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#ce5960]">
             Best Sellers
@@ -89,17 +88,34 @@ export function FeatureCarousel({ products }: FeaturedCarouselProps) {
           >
 
             <CarouselContent className="-ml-4">
+          
 
               {products.map((product) => (
+                
                 <CarouselItem
-                  key={product._id}
-                   className="basis-full pl-4 sm:basis-1/2 lg:basis-1/5"
+                key={product._id}
+                className="h-full basis-full pl-4 sm:basis-1/2 lg:basis-1/5"
+                
                 >
-                  <ProductCard product={product} />
+                  {/* main card that we made  */}
+                 
+                 <FeatureProductCard product={product} />
+                
+                
+                
+                
                 </CarouselItem>
               ))}
 
             </CarouselContent>
+
+            
+          
+
+
+
+
+              
 
             <CarouselPrevious className= "left-4 border-zinc-700 bg-zinc800/80 text-white hover:bg-pink-700  hover:text-white sm:left-8 "/>
             <CarouselNext className= "right-4 border-zinc-700 bg-zinc-800/80 text-white hover:bg-pink-700  hover:text-white sm:right-8"/>

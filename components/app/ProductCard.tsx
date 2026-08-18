@@ -34,6 +34,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden rounded-2xl border-0 bg-white p-0 shadow-sm ring-1 ring-zinc-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 dark:bg-zinc-900 dark:ring-white/10 dark:hover:shadow-zinc-950/50 ">
+      
       <Link href={`/products/${product.slug}`} className="block">
         <div
         
@@ -85,7 +86,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
 
-      {/* Thumbnail strip - only show if multiple images */}
+ {/* Thumbnail strip - only show if multiple images  */}
       {hasMultipleImages && (
         <div className="flex gap-2 border-t border-zinc-100 bg-zinc-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-800/50">
           {images.map((image, index) => (
@@ -115,6 +116,12 @@ export function ProductCard({ product }: ProductCardProps) {
           ))}
         </div>
       )}
+
+
+
+
+
+
 
         <CardContent className="flex flex-1 flex-col p-3">
           {/*  

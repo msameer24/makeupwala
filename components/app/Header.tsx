@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 
-export function Navbar() {
+export function Header() {
  
 
 const {isSignedIn } = useAuth();

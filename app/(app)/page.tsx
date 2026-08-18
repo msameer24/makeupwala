@@ -14,7 +14,7 @@ import { ProductCard } from "@/components/app/ProductCard";
 import { ProductSection } from "@/components/app/ProductSection";
 import { FeatureCarousel } from "@/components/app/FeatureCarousel";
 
-
+import { FeatureCarouselTest } from "@/components/app/FeatureCarousel2";
 
 
 export default async function Home() {
@@ -37,10 +37,11 @@ export default async function Home() {
 
   return(
     <div>  
-
+      
       <HeroSection />
-     <FeatureCarousel products={products}/>
+      <FeatureCarousel products={featuredProducts}/>
       <ProductSection products={products} />  
+
     </div>
     
   )
