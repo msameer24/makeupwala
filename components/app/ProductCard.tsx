@@ -3,12 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-// import { AddToCartButton } from "@/components/app/AddToCartButton";
-// import { StockBadge } from "@/components/app/StockBadge";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { cn, formatPrice } from "@/lib/utils";
+import { ShoppingBag } from "lucide-react";
 import type { FILTER_PRODUCTS_BY_NAME_QUERY_RESULT } from "@/sanity.types";
+
+
+// ********* for adding add to cart feature     **************
+// import { AddToCartButton } from "@/components/app/AddToCartButton";
+// import { StockBadge } from "@/components/app/StockBadge";
+
 
 type Product = FILTER_PRODUCTS_BY_NAME_QUERY_RESULT[number];
 
@@ -145,15 +151,13 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
 
       <CardFooter className="mt-auto p-5 pt-0">
-        {/* <AddToCartButton 
-          productId={product._id}
-          name={product.name ?? "Unknown Product"}
-          price={product.price ?? 0}
-          image={mainImageUrl ?? undefined}
-          stock={stock}
-        />*/}
-
-        <button>Add To Cart</button>
+      
+            <button
+          type="button"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#ce5960] mt-2 py-2 text-sm font-medium text-white transition hover:bg-[#b94c54]">
+          Add To Cart
+          <ShoppingBag size={15} />
+        </button> 
       </CardFooter>
     </Card>
   );

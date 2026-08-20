@@ -69,14 +69,28 @@ export const productType = defineType({
     }),
 
     // 6. Category
-    defineField({
-      name: "category",
-      title: "Category",
-      type: "reference",
-      to: [{ type: "category" }],
-      validation: (rule) =>
-        rule.required().error("Category is required"),
-    }),
+
+defineField({
+  name: "category",
+  title: "Category",
+  type: "reference",
+  to: [{ type: "category" }],
+  validation: (rule) =>
+    rule.required().error("Category is required"),
+}),
+
+
+// 6.1 sub categories
+
+defineField({
+  name: "subcategory",
+  title: "Subcategory",
+  type: "reference",
+  to: [{ type: "subcategory" }],
+  validation: (rule) =>
+    rule.required().error("Subcategory is required"),
+}),
+
 
     // 7. Images
     defineField({

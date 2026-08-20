@@ -72,20 +72,20 @@ export function FeatureCarousel({ products }: FeaturedCarouselProps) {
         {/* Carousel */}
         <div className="relative">
 
-          <Carousel
-            setApi={setApi}
-            opts={{
-              loop: true,
-              align: "start",
-            }}
-            plugins={[
-              Autoplay({
-                delay: 2000,
-                stopOnInteraction: false,
-                stopOnMouseEnter: true,
-              }),
-            ]}
-          >
+           <Carousel
+                              setApi={setApi}
+                              opts={{
+                                loop: true,
+                                align: "start",
+                              }}
+                              plugins={[
+                                Autoplay({
+                                  delay: 2000,
+                                  stopOnInteraction: false,
+                                  stopOnMouseEnter: true,
+                                }),
+                              ]}
+                            >
 
             <CarouselContent className="-ml-4">
           
@@ -114,12 +114,12 @@ export function FeatureCarousel({ products }: FeaturedCarouselProps) {
 
 
 
-
+{/* 
               
 
             <CarouselPrevious className= "left-4 border-zinc-700 bg-zinc800/80 text-white hover:bg-pink-700  hover:text-white sm:left-8 "/>
             <CarouselNext className= "right-4 border-zinc-700 bg-zinc-800/80 text-white hover:bg-pink-700  hover:text-white sm:right-8"/>
-
+ */}
 
           </Carousel>
 

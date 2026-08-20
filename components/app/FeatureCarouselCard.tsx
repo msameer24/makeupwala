@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import Image from "next/image";
@@ -8,6 +6,7 @@ import { ShoppingBag } from "lucide-react";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { FEATURED_PRODUCTS_QUERY_RESULT } from "@/sanity.types";
+import { AddToCartButton } from "./AddToCartButton";
 
 type Product = FEATURED_PRODUCTS_QUERY_RESULT[number];
 
@@ -69,13 +68,13 @@ export function FeatureProductCard({
 
       {/* Cart */}
       <CardFooter className="p-4 pt-0">
-        <button
+      <button
           type="button"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#ce5960] mt-2 py-2 text-sm font-medium text-white transition hover:bg-[#b94c54]"
-        >
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#ce5960] mt-2 py-2 text-sm font-medium text-white transition hover:bg-[#b94c54]">
           Add To Cart
           <ShoppingBag size={15} />
-        </button>
+        </button> 
+            
       </CardFooter>
     </Card>
   );

@@ -66,6 +66,13 @@ export type CategoryReference = {
   [internalGroqTypeReferenceTo]?: "category";
 };
 
+export type SubcategoryReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "subcategory";
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
@@ -85,6 +92,7 @@ export type Product = {
   price?: number;
   discount?: number;
   category?: CategoryReference;
+  subcategory?: SubcategoryReference;
   images?: Array<{
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -191,6 +199,25 @@ export type Customer = {
   clerkUserId?: string;
   stripeCustomerId?: string;
   createdAt?: string;
+};
+
+export type Subcategory = {
+  _id: string;
+  _type: "subcategory";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  description?: string;
+  category?: CategoryReference;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
 };
 
 export type AuthorReference = {
@@ -411,12 +438,14 @@ export type AllSanitySchemaTypes =
   | CustomerReference
   | Order
   | CategoryReference
+  | SubcategoryReference
   | SanityImageAssetReference
   | Product
   | SanityImageCrop
   | SanityImageHotspot
   | Slug
   | Customer
+  | Subcategory
   | AuthorReference
   | Post
   | BlockContent
@@ -433,11 +462,12 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/queries/categories.ts
 // Variable: ALL_CATEGORIES_QUERY
-// Query: *[  _type == 'category'] | order(title asc) {        _id,         title,         "slug":slug.current,        "image" : image{         asset->{            _id,            url         },          hotspot        }    }
+// Query: *[_type == 'category'] | order(title asc) {    _id,    title,    "slug": slug.current,    description,    "image": image{      asset->{        _id,        url      },      hotspot    }  }
 export type ALL_CATEGORIES_QUERY_RESULT = Array<{
   _id: string;
   title: string | null;
   slug: string | null;
+  description: string | null;
   image: {
     asset: {
       _id: string;
@@ -446,6 +476,52 @@ export type ALL_CATEGORIES_QUERY_RESULT = Array<{
     hotspot: SanityImageHotspot | null;
   } | null;
 }>;
+
+// Source: sanity/queries/categories.ts
+// Variable: CATEGORY_BY_SLUG_QUERY
+// Query: *[    _type == "category" &&    slug.current == $slug  ][0] {    _id,    title,    "slug": slug.current,    description,    "image": image {      asset-> {        _id,        url      },      hotspot    },    "subcategories": *[      _type == "subcategory" &&      category._ref == ^._id    ] | order(title asc) {      _id,      title,      "slug": slug.current,      description,      "image": image {        asset-> {          _id,          url        },        hotspot      }    }  }
+export type CATEGORY_BY_SLUG_QUERY_RESULT = {
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  description: string | null;
+  image: {
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+  } | null;
+  subcategories: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    description: string | null;
+    image: {
+      asset: {
+        _id: string;
+        url: string | null;
+      } | null;
+      hotspot: SanityImageHotspot | null;
+    } | null;
+  }>;
+} | null;
+
+// Source: sanity/queries/categories.ts
+// Variable: CATEGORY_WITH_PRODUCTS_QUERY
+// Query: *[    _type == "category" &&    slug.current == $category  ][0] {    _id,    title,    description,    "slug": slug.current,    "subcategories": *[      _type == "subcategory" &&      category._ref == ^._id    ] | order(title asc) {      _id,      title,      "slug": slug.current    },    "products": *[      _type == "product" &&      category._ref in ^.subcategories[]._id    ] | order(_createdAt desc) {      _id,      name,      "slug": slug.current,      description,      price,      discount,      stock,      color,      dimension,      featured,      "image": images[0]{        asset->{          _id,          url        }      }    }  }
+export type CATEGORY_WITH_PRODUCTS_QUERY_RESULT = {
+  _id: string;
+  title: string | null;
+  description: string | null;
+  slug: string | null;
+  subcategories: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  }>;
+  products: Array<never>;
+} | null;
 
 // Source: sanity/queries/customer.ts
 // Variable: CUSTOMER_BY_EMAIL_QUERY
@@ -504,6 +580,97 @@ export type RECENT_ORDERS_QUERY_RESULT = Array<{
 export type ORDER_BY_STRIPE_PAYMENT_ID_QUERY_RESULT = {
   _id: string;
 } | null;
+
+// Source: sanity/queries/product.ts
+// Variable: PRODUCTS_BY_SUBCATEGORY_QUERY
+// Query: *[    _type == "product"    && subcategory->slug.current == $subcategorySlug  ]  | order(name asc)  {  _id,  name,  "slug": slug.current,  description,  price,  discount,  "images": images[0...8]{    _key,    asset->{      _id,      url    },    hotspot,    crop  },  category->{    _id,    title,    "slug": slug.current  },  stock,  color,  productForm,  dimension,  featured}
+export type PRODUCTS_BY_SUBCATEGORY_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+  }> | null;
+  category: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
+  stock: number | null;
+  color:
+    | "beige"
+    | "black"
+    | "blue"
+    | "bronze"
+    | "brown"
+    | "burgundy"
+    | "champagne"
+    | "charcoal"
+    | "coral"
+    | "gold"
+    | "gray"
+    | "green"
+    | "hot-pink"
+    | "ivory"
+    | "lavender"
+    | "maroon"
+    | "mint"
+    | "multicolor"
+    | "navy"
+    | "nude"
+    | "olive"
+    | "orange"
+    | "peach"
+    | "pink"
+    | "purple"
+    | "red"
+    | "rose"
+    | "silver"
+    | "tan"
+    | "teal"
+    | "violet"
+    | "white"
+    | "wine"
+    | "yellow"
+    | null;
+  productForm:
+    | "balm"
+    | "butter"
+    | "clay"
+    | "crayon"
+    | "cream"
+    | "foam"
+    | "gel"
+    | "liquid"
+    | "loose-powder"
+    | "lotion"
+    | "mist"
+    | "mousse"
+    | "oil"
+    | "paste"
+    | "pencil"
+    | "powder"
+    | "pressed-powder"
+    | "roll-on"
+    | "semi-solid"
+    | "serum"
+    | "solid"
+    | "spray"
+    | "stick"
+    | "wax"
+    | null;
+  dimension: string | null;
+  featured: boolean | null;
+}>;
 
 // Source: sanity/queries/product.ts
 // Variable: ALL_PRODUCTS_QUERY
@@ -1569,13 +1736,16 @@ export type AI_SEARCH_PRODUCTS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '*[  _type == \'category\'] | order(title asc) {\n        _id, \n        title, \n        "slug":slug.current,\n        "image" : image{\n         asset->{\n            _id,\n            url\n         }, \n         hotspot\n        }\n    }': ALL_CATEGORIES_QUERY_RESULT;
+    '*[_type == \'category\'] | order(title asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    description,\n    "image": image{\n      asset->{\n        _id,\n        url\n      },\n      hotspot\n    }\n  }': ALL_CATEGORIES_QUERY_RESULT;
+    '\n  *[\n    _type == "category" &&\n    slug.current == $slug\n  ][0] {\n\n    _id,\n    title,\n    "slug": slug.current,\n    description,\n\n    "image": image {\n      asset-> {\n        _id,\n        url\n      },\n      hotspot\n    },\n\n    "subcategories": *[\n      _type == "subcategory" &&\n      category._ref == ^._id\n    ] | order(title asc) {\n\n      _id,\n      title,\n      "slug": slug.current,\n      description,\n\n      "image": image {\n        asset-> {\n          _id,\n          url\n        },\n        hotspot\n      }\n    }\n  }\n': CATEGORY_BY_SLUG_QUERY_RESULT;
+    '\n  *[\n    _type == "category" &&\n    slug.current == $category\n  ][0] {\n\n    _id,\n    title,\n    description,\n    "slug": slug.current,\n\n    "subcategories": *[\n      _type == "subcategory" &&\n      category._ref == ^._id\n    ] | order(title asc) {\n      _id,\n      title,\n      "slug": slug.current\n    },\n\n    "products": *[\n      _type == "product" &&\n      category._ref in ^.subcategories[]._id\n    ] | order(_createdAt desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      description,\n      price,\n      discount,\n      stock,\n      color,\n      dimension,\n      featured,\n\n      "image": images[0]{\n        asset->{\n          _id,\n          url\n        }\n      }\n    }\n  }\n': CATEGORY_WITH_PRODUCTS_QUERY_RESULT;
     '* [  _type == "customer" && email == $email ] [0] \n    {\n        _id,\n        name,\n        email,\n\n    }\n': CUSTOMER_BY_EMAIL_QUERY_RESULT;
     '\n  *[_type == "order"] {\n\n    _id,\n    orderNumber,\n    totalCost,\n    email,\n    PhoneNumber,\n  } \n': ALL_ORDERS_QUERY_RESULT;
     '\n  *[ _type == "order" && clerkUserId == $clerkUserId] | order(createdAt desc)\n  {\n    _id,\n    orderNumber,\n    totalCost,\n    createdAt,\n    email,\n    PhoneNumber,\n    clerkUserId,\n    "itemCount": count(item),\n    "itemNames": item[].product->name,\n\n  }': ORDER_BY_USER_QUERY_RESULT;
     ' \n  *[ _type == " order" && _id == $_id] [0] \n  {\n     _id,\n    orderNumber,\n    clerkUserId,\n    email,\n    item[]\n    {\n        _key,\n        quantity,\n        priceAtPurchase,\n        product->\n        {\n              _id,\n              name,\n              "slug": slug.current,\n              "image": images[0]\n              {\n                      asset->\n                      {\n                        _id,\n                        url\n                      }\n              }\n        }\n    },\n    totalCost,\n    address\n    {\n        name,\n        line1,\n        line2,\n        city,\n        postcode,\n        country,\n    },\n    stripeCustomerId,\n     createdAt,\n  } ': ORDER_BY_ID_QUERY_RESULT;
     ' \n   *[ _type == "order"] | order(createdAt desc){\n       _id,\n    orderNumber,  \n    email,\n    totalCost,\n   createdAt,\n  }\n  ': RECENT_ORDERS_QUERY_RESULT;
     '\n  *[ _type == "order" && stripeCustomerId == $stripeCustomerId ] [0]{ _id } ': ORDER_BY_STRIPE_PAYMENT_ID_QUERY_RESULT;
+    '\n  *[\n    _type == "product"\n    && subcategory->slug.current == $subcategorySlug\n  ]\n  | order(name asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': PRODUCTS_BY_SUBCATEGORY_QUERY_RESULT;
     '\n  *[\n    _type == "product"\n  ]\n  | order(name asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': ALL_PRODUCTS_QUERY_RESULT;
     '\n  *[\n    _type == "product"\n    && featured == true\n    && stock > 0\n  ]\n  | order(name asc)[0...6]\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': FEATURED_PRODUCTS_QUERY_RESULT;
     '\n  *[\n    _type == "product"\n    && category->slug.current == $categorySlug\n  ]\n  | order(name asc)\n  {\n  _id,\n  name,\n  "slug": slug.current,\n  description,\n  price,\n  discount,\n\n  "images": images[0...8]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot,\n    crop\n  },\n\n  category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n\n  stock,\n  color,\n  productForm,\n  dimension,\n  featured\n}\n': PRODUCTS_BY_CATEGORY_QUERY_RESULT;

@@ -37,6 +37,17 @@ const PRODUCT_CARD_PROJECTION = `{
   featured
 }`;
 
+
+
+export const PRODUCTS_BY_SUBCATEGORY_QUERY = defineQuery(`
+  *[
+    _type == "product"
+    && subcategory->slug.current == $subcategorySlug
+  ]
+  | order(name asc)
+  ${PRODUCT_CARD_PROJECTION}
+`);
+
 // ============================================================
 // ALL PRODUCTS
 // ============================================================

@@ -60,7 +60,7 @@ from here |..
             
            <a href="/">Home</a>
 
-            <a href="#"
+            <a href="/shop"
               className="relative text-[#d15d61]">
               Shop <span className="absolute -bottom-9 left-0 h-1px w-full bg-[#d15d61]" />
             </a>

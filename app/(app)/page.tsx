@@ -1,4 +1,3 @@
-
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   FEATURED_PRODUCTS_QUERY,
@@ -13,8 +12,10 @@ import HeroSection from "@/components/app/HeroSection";
 import { ProductCard } from "@/components/app/ProductCard";
 import { ProductSection } from "@/components/app/ProductSection";
 import { FeatureCarousel } from "@/components/app/FeatureCarousel";
-
-import { FeatureCarouselTest } from "@/components/app/FeatureCarousel2";
+import Link from "next/link";
+import CategoryCard from "@/components/app/CategoryCard";
+import { ALL_CATEGORIES_QUERY } from "@/sanity/queries/categories";
+import CategoryCarousel from "@/components/app/CategoryCarousel";
 
 
 export default async function Home() {
@@ -30,6 +31,12 @@ export default async function Home() {
   });
 
 
+const { data: categories } = await sanityFetch({
+  query: ALL_CATEGORIES_QUERY,
+});
+
+
+
     // console.log("featuredProducts:", featuredProducts);
 
     
@@ -38,11 +45,12 @@ export default async function Home() {
   return(
     <div>  
       
-      <HeroSection />
-      <FeatureCarousel products={featuredProducts}/>
-      <ProductSection products={products} />  
+      {/* <HeroSection />*/}
+      {/* <FeatureCarousel products={featuredProducts}/> */}
+      {/* <ProductSection products={products} />    */}
+      <CategoryCarousel categories={categories} />
 
-    </div>
+</div>
     
   )
 
